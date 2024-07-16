@@ -12,12 +12,17 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Управление промышленной безопасностью',
+      initialRoute: '/',
+      routes: {
+        '/' : (context) => const MyHomePage(title: 'Home'),
+        '/second' : (context) => const DetailScreen(),
+      },
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
             seedColor: Colors.green, brightness: Brightness.dark),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Home'),
+      // home: const MyHomePage(title: 'Home'),
     );
   }
 }
@@ -35,12 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: const IconButton(
-          icon: Icon(Icons.menu),
-          tooltip: 'Navigation menu',
-          onPressed: null,
-        ),
+      appBar: AppBar(        
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
         actions: const [
@@ -70,10 +70,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   Image(image: AssetImage('images/pic$index.png')),
                   ElevatedButton(
                       onPressed: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) {
-                          return DetailScreen(index: index);
-                        }));
+                        Navigator.pushNamed(context, '/second', arguments: index);
+                        // Navigator.push(context,
+                        //     MaterialPageRoute(builder: (context) {
+                        //   return DetailScreen(index: index);}));
                       },
                       child: Text(elem[index])),
                 ],
@@ -83,7 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: const FloatingActionButton(
-        tooltip: 'Sample Navigation',
+        tooltip: 'Я пока ничего не делаю)',
         onPressed: null,
         child: Icon(Icons.add),
       ),
@@ -100,19 +100,14 @@ List<String> elem = [
   'Ростехнадзор'
 ];
 
-class DetailScreen extends StatelessWidget {
-  final int index;
-  const DetailScreen({super.key, required this.index});
+class DetailScreen extends StatelessWidget {  
+  const DetailScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final int index = ModalRoute.of(context)!.settings.arguments as int;
     return Scaffold(
-        appBar: AppBar(
-          leading: const IconButton(
-            icon: Icon(Icons.menu),
-            tooltip: 'Navigation menu',
-            onPressed: null,
-          ),
+        appBar: AppBar(          
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: Text(elem[index]),
           actions: const [
