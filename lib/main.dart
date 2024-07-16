@@ -1,36 +1,50 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-void main() {
-  runApp(const MyApp());
-}
+void main() => runApp(const MyApp());
+
+final GoRouter _router = GoRouter(routes: <RouteBase>[
+  GoRoute(
+      path: '/',
+      builder: (BuildContext context, GoRouterState state) {
+        return const MyHomePage();
+      },
+      routes: <RouteBase>[
+        GoRoute(
+          path: 'sample',
+          builder: (BuildContext context, GoRouterState state) {
+            final int index = state.extra as int;
+            return DetailScreen(index: index);
+          },
+        ),
+        GoRoute(
+          path: 'gas_cariers',
+          builder: (BuildContext context, GoRouterState state) {
+            final int index = state.extra as int;
+            return DetailScreen(index: index);
+          },
+        )
+      ])
+]);
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Управление промышленной безопасностью',
-      initialRoute: '/',
-      routes: {
-        '/' : (context) => const MyHomePage(title: 'Home'),
-        '/second' : (context) => const DetailScreen(),
-      },
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.green, brightness: Brightness.dark),
-        useMaterial3: true,
-      ),
-      // home: const MyHomePage(title: 'Home'),
-    );
+    return MaterialApp.router(
+        routerConfig: _router,
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+              seedColor: Colors.green, brightness: Brightness.dark),
+        ));
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+  const MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -40,9 +54,9 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(        
+      appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: const Text("Home"),
         actions: const [
           IconButton(
             icon: Icon(Icons.filter_alt),
@@ -69,12 +83,27 @@ class _MyHomePageState extends State<MyHomePage> {
                 children: [
                   Image(image: AssetImage('images/pic$index.png')),
                   ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/second', arguments: index);
-                        // Navigator.push(context,
-                        //     MaterialPageRoute(builder: (context) {
-                        //   return DetailScreen(index: index);}));
+                      // onPressed: () => context.go('/sample', extra: index),
+
+                      onPressed: () async {
+                        if (await canLaunchUrl(
+                            Uri.parse('http://109.194.27.104:8088/main.php'))) {
+                          await launchUrl(
+                              Uri.parse('http://109.194.27.104:8088/main.php'));
+                        } else {
+                          // Ссылка недоступна. Покажите сообщение об ошибке.
+                          debugPrint('Не удалось открыть ссылку');
+                        }
                       },
+
+                      // {
+                      //   // Передаем index в качестве аргумента
+                      //   Navigator.pushNamed(context, '/second',
+                      //       arguments: index);
+                      //   // Navigator.push(context,
+                      //   //     MaterialPageRoute(builder: (context) {
+                      //   //   return DetailScreen(index: index);}));
+                      // },
                       child: Text(elem[index])),
                 ],
               ),
@@ -100,14 +129,15 @@ List<String> elem = [
   'Ростехнадзор'
 ];
 
-class DetailScreen extends StatelessWidget {  
-  const DetailScreen({super.key});
+class DetailScreen extends StatelessWidget {
+  // Получаем index из extra
+  final int index;
+  const DetailScreen({super.key, required this.index});
 
   @override
   Widget build(BuildContext context) {
-    final int index = ModalRoute.of(context)!.settings.arguments as int;
     return Scaffold(
-        appBar: AppBar(          
+        appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: Text(elem[index]),
           actions: const [
@@ -124,9 +154,7 @@ class DetailScreen extends StatelessWidget {
           ],
         ),
         body: GestureDetector(
-          onTap: () {
-            Navigator.pop(context);
-          },
+          onTap: () => context.go('/'),
           child: Center(
             child: Image(
               image: AssetImage('images/pic$index.png'),
