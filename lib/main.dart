@@ -1,45 +1,48 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:get/get.dart';
 
 void main() => runApp(const MyApp());
 
-final GoRouter _router = GoRouter(routes: <RouteBase>[
-  GoRoute(
-      path: '/',
-      builder: (BuildContext context, GoRouterState state) {
-        return const MyHomePage();
-      },
-      routes: <RouteBase>[
-        GoRoute(
-          path: 'sample',
-          builder: (BuildContext context, GoRouterState state) {
-            final int index = state.extra as int;
-            return DetailScreen(index: index);
-          },
-        ),
-        GoRoute(
-          path: 'gas_cariers',
-          builder: (BuildContext context, GoRouterState state) {
-            final int index = state.extra as int;
-            return DetailScreen(index: index);
-          },
-        )
-      ])
-]);
+List<String> elem = [
+  'Сосуды',
+  'Арматура',
+  'Персонал',
+  'Газовозы',
+  'Документы',
+  'Ростехнадзор'
+];
+List<String> url = [
+  '/tank',
+  '/equipment',
+  '/staff',
+  '/gas_carriers',
+  '/documents',
+  'rtn'
+];
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-        routerConfig: _router,
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-              seedColor: Colors.green, brightness: Brightness.dark),
-        ));
+    return GetMaterialApp(
+      initialRoute: '/',
+      getPages: [
+        GetPage(name: '/', page: () => const MyHomePage()),
+        GetPage(name: '/tank', page: () => const DetailScreen()),
+        GetPage(name: '/equipment', page: () => const DetailScreen()),
+        GetPage(name: '/staff', page: () => const DetailScreen()),
+        GetPage(name: '/gas_carriers', page: () => const DetailScreen()),
+        GetPage(name: '/documents', page: () => const DetailScreen()),
+        GetPage(name: '/rtn', page: () => const RostechNadzorScreen()),
+      ],
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.green, brightness: Brightness.dark),
+      ),
+      debugShowCheckedModeBanner: false,
+    );
   }
 }
 
@@ -83,27 +86,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 children: [
                   Image(image: AssetImage('images/pic$index.png')),
                   ElevatedButton(
-                      // onPressed: () => context.go('/sample', extra: index),
-
-                      onPressed: () async {
-                        if (await canLaunchUrl(
-                            Uri.parse('http://109.194.27.104:8088/main.php'))) {
-                          await launchUrl(
-                              Uri.parse('http://109.194.27.104:8088/main.php'));
-                        } else {
-                          // Ссылка недоступна. Покажите сообщение об ошибке.
-                          debugPrint('Не удалось открыть ссылку');
-                        }
-                      },
-
-                      // {
-                      //   // Передаем index в качестве аргумента
-                      //   Navigator.pushNamed(context, '/second',
-                      //       arguments: index);
-                      //   // Navigator.push(context,
-                      //   //     MaterialPageRoute(builder: (context) {
-                      //   //   return DetailScreen(index: index);}));
-                      // },
+                      onPressed: () =>
+                          Get.toNamed(url[index], arguments: index),
                       child: Text(elem[index])),
                 ],
               ),
@@ -120,22 +104,12 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-List<String> elem = [
-  'Сосуды',
-  'Арматура',
-  'Персонал',
-  'Газовозы',
-  'Документы',
-  'Ростехнадзор'
-];
-
 class DetailScreen extends StatelessWidget {
-  // Получаем index из extra
-  final int index;
-  const DetailScreen({super.key, required this.index});
+  const DetailScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final index = Get.arguments as int;
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -154,12 +128,103 @@ class DetailScreen extends StatelessWidget {
           ],
         ),
         body: GestureDetector(
-          onTap: () => context.go('/'),
+          onTap: () => Get.back(),
           child: Center(
             child: Image(
               image: AssetImage('images/pic$index.png'),
             ),
           ),
         ));
+  }
+}
+
+class RostechNadzorScreen extends StatefulWidget {
+  const RostechNadzorScreen({super.key});
+
+  @override
+  State<RostechNadzorScreen> createState() => _RostechNadzorScreen();
+}
+
+class _RostechNadzorScreen extends State<RostechNadzorScreen> {
+  late bool _loading;
+  late double _progressValue;
+
+  @override
+  void initState() {
+    _loading = false;
+    _progressValue = 0;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        // backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: const Text("Пример"),
+        actions: const [
+          IconButton(
+            icon: Icon(Icons.filter_alt),
+            tooltip: 'Filter',
+            onPressed: null,
+          ),
+          IconButton(
+            icon: Icon(Icons.search),
+            tooltip: 'Search',
+            onPressed: null,
+          ),
+        ],
+      ),
+      body: Center(
+          child: Stack(
+            fit: StackFit.expand,
+        children: [
+          const Image(image: AssetImage('assets/images/bg.jpg')),
+          Image.asset('assets/icons/flutter.png'),
+          Container(
+              padding: const EdgeInsets.all(16),
+              child: _loading
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        LinearProgressIndicator(
+                          value: _progressValue,
+                        ),
+                        Text(
+                          '${(_progressValue * 100).round()}%',
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 20),
+                        ),
+                      ],
+                    )
+                  : const Text(
+                      "Press button to download",
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    )),
+        ],
+      )),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => setState(() {
+          _loading = !_loading;
+          _updateProgress();
+        }),
+        child: const Icon(Icons.cloud),
+      ),
+    );
+  }
+
+  void _updateProgress() {
+    const oneSec = Duration(milliseconds: 1);
+    Timer.periodic(oneSec, (Timer t) {
+      setState(() {
+        _progressValue += 0.01;
+        if (_progressValue.toStringAsFixed(1) == '1.0') {
+          _loading = false;
+          t.cancel();
+          _progressValue = 0.0;
+          return;
+        }
+      });
+    });
   }
 }
