@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../viewmodels/task_viewmodel.dart';
 import 'task_detail_screen.dart';
 
+
+
 class TaskListScreen extends StatefulWidget {
   const TaskListScreen({super.key});
 
@@ -14,6 +16,12 @@ class _TaskListScreenState extends State<TaskListScreen> {
   final _formKey = GlobalKey<FormState>();
   String _title = "";
   String _description = "";
+
+  @override
+  void initState() {
+    super.initState();    
+    _viewModel.loadTasks(); // Загрузка задач при инициализации
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -104,3 +112,5 @@ class _TaskListScreenState extends State<TaskListScreen> {
     );
   }
 }
+
+

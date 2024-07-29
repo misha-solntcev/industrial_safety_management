@@ -41,7 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Stack(
                 alignment: const Alignment(-0.8, -0.9),
                 children: [
-                  Image(image: AssetImage('images/pic$index.png')),
+                  Image(image: AssetImage('assets/images/pic$index.png')),
                   ElevatedButton(
                       onPressed: () =>
                           Get.toNamed(data.map((e)=>e.url).toList()[index], arguments: index),

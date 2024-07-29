@@ -1,18 +1,50 @@
+import 'package:flutter/material.dart';
 import '../models/task.dart';
 import '../models/task_list.dart';
+import '../models/database/repository.dart';
 
 
-class TaskViewModel {  
+class TaskViewModel extends ChangeNotifier {
   final TaskList _taskList = TaskList(tasks: []);
 
   TaskList get taskList => _taskList;
 
-  void addTask(String title, String description) {
+  Future<void> addTask(String title, String description) async {
     final task = Task(title: title, description: description);
-    _taskList.addTask(task);
+    await Repository.insertTask(task);
+    notifyListeners();
   }
 
-  void toggleTaskCompletion(int index) {
-    _taskList.toggleTaskCompletion(index);
+  Future<void> toggleTaskCompletion(int index) async {
+    final task = _taskList.tasks[index];
+    task.isCompleted = !task.isCompleted;
+    await Repository.updateTask(task); 
+    notifyListeners();
+  }
+
+  Future<void> loadTasks() async {
+    _taskList.tasks = await Repository.getTasks(); 
+    notifyListeners();
   }
 }
+
+
+
+// import '../models/task.dart';
+// import '../models/task_list.dart';
+
+
+// class TaskViewModel {  
+//   final TaskList _taskList = TaskList(tasks: []);
+
+//   TaskList get taskList => _taskList;
+
+//   void addTask(String title, String description) {
+//     final task = Task(title: title, description: description);
+//     _taskList.tasks.add(task);
+//   }
+
+//   void toggleTaskCompletion(int index) {
+//     _taskList.tasks[index].isCompleted = !_taskList.tasks[index].isCompleted;
+//   }
+// }

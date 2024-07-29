@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:industrial_safety_management/core/theme/theme.dart';
-
 import 'package:industrial_safety_management/features/home/home.dart';
 import 'package:industrial_safety_management/features/tank/tank.dart';
 import 'package:industrial_safety_management/features/staff/staff.dart';

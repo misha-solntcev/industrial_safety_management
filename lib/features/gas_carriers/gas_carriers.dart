@@ -29,7 +29,7 @@ class DetailScreen extends StatelessWidget {
           onTap: () => Get.back(),
           child: Center(
             child: Image(
-              image: AssetImage('images/pic$index.png'),
+              image: AssetImage('assets/images/pic$index.png'),
             ),
           ),
         ));
