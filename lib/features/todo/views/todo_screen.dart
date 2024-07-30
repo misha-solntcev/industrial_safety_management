@@ -13,19 +13,24 @@ class ToDoScreen extends StatelessWidget {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text("To Do List"),
       ),
-      body: Consumer<TodoViewmodel>(
-        builder: (context, todoProvider, _) {
-          return ListView.separated(
-              itemBuilder: (context, index) {
+      body: Consumer<TodoViewmodel>(builder: (context, todoProvider, _) {
+        return CustomScrollView(slivers: [
+          SliverToBoxAdapter(
+            child: Image.asset('assets/images/pic0.png'),
+          ),
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (BuildContext context, int index) {
                 final task = todoProvider.tasks[index];
-                return ToDoWidget(task: task,);
+                return ToDoWidget(
+                  task: task,
+                );
               },
-              separatorBuilder: (context, index) {
-                return const Divider();
-              },
-              itemCount: todoProvider.tasks.length);
-        }
-      ),
+              childCount: todoProvider.tasks.length,
+            ),
+          ),
+        ]);
+      }),
       floatingActionButton: FloatingActionButton(
         tooltip: 'Я пока ничего не делаю)',
         onPressed: () {
@@ -43,7 +48,8 @@ class ToDoScreen extends StatelessWidget {
 
 class ToDoWidget extends StatelessWidget {
   const ToDoWidget({
-    super.key, required this.task,
+    super.key,
+    required this.task,
   });
   final ToDo task;
 
