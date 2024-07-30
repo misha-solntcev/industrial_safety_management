@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../viewmodels/task_viewmodel.dart';
 import 'task_detail_screen.dart';
-
-
 
 class TaskListScreen extends StatefulWidget {
   const TaskListScreen({super.key});
@@ -12,15 +11,14 @@ class TaskListScreen extends StatefulWidget {
 }
 
 class _TaskListScreenState extends State<TaskListScreen> {
-  final _viewModel = TaskViewModel();
   final _formKey = GlobalKey<FormState>();
   String _title = "";
   String _description = "";
 
   @override
   void initState() {
-    super.initState();    
-    _viewModel.loadTasks(); // Загрузка задач при инициализации
+    super.initState();
+    context.read<TaskViewModel>().loadTasks();
   }
 
   @override
@@ -29,29 +27,44 @@ class _TaskListScreenState extends State<TaskListScreen> {
       appBar: AppBar(
         title: const Text("Task List"),
       ),
-      body: ListView.builder(
-          itemCount: _viewModel.taskList.tasks.length,
-          itemBuilder: (context, index) {
-            final task = _viewModel.taskList.tasks[index];
-            return ListTile(
-              title: Text(task.title),
-              subtitle: Text(task.description),
-              trailing: Checkbox(
-                value: task.isCompleted,
-                onChanged: (value) {
-                  setState(() {
-                    _viewModel.toggleTaskCompletion(index);
-                  });
-                },
-              ),
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => TaskDetailScreen(task: task)));
-              },
-            );
-          }),
+      body: Consumer<TaskViewModel>(
+        builder: (context, viewModel, child) {
+          return ListView.builder(
+              itemCount: viewModel.taskList.tasks.length,
+              itemBuilder: (context, index) {
+                final task = viewModel.taskList.tasks[index];
+                return ListTile(
+                  title: Text(task.title),
+                  subtitle: Text(task.description),
+                  trailing: Wrap(                    
+                    children: [
+                      Checkbox(
+                        value: task.isCompleted,
+                        onChanged: (value) {
+                          setState(() {
+                            viewModel.toggleTaskCompletion(index);
+                          });
+                        },
+                      ),
+                      IconButton(
+                          onPressed: () {
+                            context
+                              .read<TaskViewModel>()
+                              .deleteTasks(index);
+                          }, icon: const Icon(Icons.delete))
+                    ],
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                TaskDetailScreen(task: task)));
+                  },
+                );
+              });
+        },
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           showDialog(
@@ -68,18 +81,24 @@ class _TaskListScreenState extends State<TaskListScreen> {
                           decoration: const InputDecoration(
                             labelText: 'Title',
                           ),
-                          onSaved: (value) {
-                            // _viewModel.addTask(value!, '');
-                            _title = value!;
+                          onSaved: (value) => _title = value!,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please enter a title";
+                            }
+                            return null;
                           },
                         ),
                         TextFormField(
                           decoration: const InputDecoration(
                             labelText: 'Description',
                           ),
-                          onSaved: (value) {
-                            // _viewModel.addTask('', value!);
-                            _description = value!;
+                          onSaved: (value) => _description = value!,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please enter a description";
+                            }
+                            return null;
                           },
                         )
                       ],
@@ -96,8 +115,9 @@ class _TaskListScreenState extends State<TaskListScreen> {
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
                           _formKey.currentState!.save();
-                          _viewModel.addTask(_title, _description);
-                          setState(() {});
+                          context
+                              .read<TaskViewModel>()
+                              .addTask(_title, _description);
                         }
                         Navigator.of(context).pop();
                       },
@@ -112,5 +132,3 @@ class _TaskListScreenState extends State<TaskListScreen> {
     );
   }
 }
-
-

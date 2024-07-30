@@ -12,6 +12,7 @@ class TaskViewModel extends ChangeNotifier {
   Future<void> addTask(String title, String description) async {
     final task = Task(title: title, description: description);
     await Repository.insertTask(task);
+    await loadTasks();
     notifyListeners();
   }
 
@@ -26,25 +27,11 @@ class TaskViewModel extends ChangeNotifier {
     _taskList.tasks = await Repository.getTasks(); 
     notifyListeners();
   }
+
+  Future<void> deleteTasks(int index) async {
+    final task = _taskList.tasks[index];
+    await Repository.deleteTask(task);
+    await loadTasks();
+    notifyListeners();
+  }
 }
-
-
-
-// import '../models/task.dart';
-// import '../models/task_list.dart';
-
-
-// class TaskViewModel {  
-//   final TaskList _taskList = TaskList(tasks: []);
-
-//   TaskList get taskList => _taskList;
-
-//   void addTask(String title, String description) {
-//     final task = Task(title: title, description: description);
-//     _taskList.tasks.add(task);
-//   }
-
-//   void toggleTaskCompletion(int index) {
-//     _taskList.tasks[index].isCompleted = !_taskList.tasks[index].isCompleted;
-//   }
-// }

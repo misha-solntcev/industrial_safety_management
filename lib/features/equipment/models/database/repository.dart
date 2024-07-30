@@ -2,6 +2,8 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import '../task.dart';
 
+// /run/media/EXTERNAL_USB/Файлы/Flutter/Dev/industrial_safety_management/.dart_tool/sqflite_common_ffi/databases/tasks.db
+
 class Repository {
   static const String databaseName = 'tasks.db';
   static const String tableName = 'tasks';
@@ -24,7 +26,6 @@ class Repository {
     ''');
   }
 
-  // Функция для получения всех задач из БД
   static Future<List<Task>> getTasks() async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query(tableName);
@@ -33,7 +34,6 @@ class Repository {
     });
   }
 
-// Функция для вставки задачи в БД
   static Future<int> insertTask(Task task) async {
     final db = await database;
     return await db.insert(tableName, task.toMap());

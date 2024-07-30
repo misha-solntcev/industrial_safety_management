@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:industrial_safety_management/core/theme/theme.dart';
-import 'package:industrial_safety_management/features/home/home.dart';
-import 'package:industrial_safety_management/features/tank/tank.dart';
-import 'package:industrial_safety_management/features/staff/staff.dart';
-import 'package:industrial_safety_management/features/gas_carriers/gas_carriers.dart';
-import 'package:industrial_safety_management/features/documents/documents.dart';
-import 'package:industrial_safety_management/features/rtn/rtn.dart';
-import 'package:industrial_safety_management/features/equipment/views/task_list_screen.dart';
-
+import 'core/theme/theme.dart';
+import 'features/home/home.dart';
+import 'features/tank/tank.dart';
+import 'features/staff/staff.dart';
+import 'features/gas_carriers/gas_carriers.dart';
+import 'features/documents/documents.dart';
+import 'features/rtn/rtn.dart';
+import 'features/equipment/views/task_list_screen.dart';
+import 'features/todo/views/todo_screen.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -25,6 +25,7 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/gas_carriers', page: () => const TaskListScreen()),
         GetPage(name: '/documents', page: () => const Sample()),
         GetPage(name: '/rtn', page: () => const Example()),
+        GetPage(name: '/todo', page: () => const ToDoScreen()),
       ],
       theme: theme,
       debugShowCheckedModeBanner: false,

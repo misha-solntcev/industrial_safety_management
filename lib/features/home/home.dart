@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:industrial_safety_management/core/db/data.dart';
@@ -43,19 +42,20 @@ class _MyHomePageState extends State<MyHomePage> {
                 children: [
                   Image(image: AssetImage('assets/images/pic$index.png')),
                   ElevatedButton(
-                      onPressed: () =>
-                          Get.toNamed(data.map((e)=>e.url).toList()[index], arguments: index),
-                      child: Text(data.map((e)=>e.title).toList()[index])),
+                      onPressed: () => Get.toNamed(
+                          data.map((e) => e.url).toList()[index],
+                          arguments: index),
+                      child: Text(data.map((e) => e.title).toList()[index])),
                 ],
               ),
             );
           }),
         ),
       ),
-      floatingActionButton: const FloatingActionButton(
+      floatingActionButton: FloatingActionButton(
         tooltip: 'Я пока ничего не делаю)',
-        onPressed: null,
-        child: Icon(Icons.add),
+        onPressed: () {},
+        child: const Icon(Icons.add),
       ),
     );
   }
